@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>路途有数 · 运输天气风险决策</title>
+  <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script defer src="/static/vendor/leaflet/leaflet.js"></script>
+  <script defer src="/static/vendor/echarts/echarts.min.js"></script>
+  <script defer src="/static/js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">↗</div><div><strong>路途有数</strong><span>ROUTE WEATHER INTELLIGENCE</span></div></div>
+  <nav class="mode-switch" aria-label="运行模式">
+    <button class="mode active" data-mode="live">实时</button><button class="mode" data-mode="offline">离线</button><button class="mode" data-mode="scenario">场景</button>
+  </nav>
+  <div class="top-actions"><span class="connection" id="connection"><i></i>正在检查状态</span><button class="text-button" id="assumptionsBtn">查看假设 ↗</button><button class="export-button" id="exportBtn" disabled>导出报告 <span>↗</span></button></div>
+</header>
+<div class="mode-banner hidden" id="banner"></div><div class="report-notice hidden" id="reportNotice" role="status"></div>
+<main>
+  <section class="page-heading"><div><div class="eyebrow"><span></span> 运输决策工作台</div><h1>看清沿途天气，<em>再出发。</em></h1><p>把天气放到预计经过的时间里，为每一次调度多一份依据。</p></div><div class="heading-note"><span class="pulse"></span> 基于路由与逐小时天气<br><small>风险等级为系统推断</small></div></section>
+  <div class="workspace">
+    <section class="map-column">
+      <div class="map-card card">
+        <div class="map-heading"><div><div class="section-kicker">ROUTE OVERVIEW</div><h2>路线全景 <span class="muted">/ 沿途风险</span></h2></div><div class="map-heading-right"><span class="legend-label">天气风险 <b class="badge inferred" title="由天气和项目阈值计算">推断</b></span><span><i class="dot risk-0"></i>无命中</span><span><i class="dot risk-1"></i>蓝</span><span><i class="dot risk-2"></i>黄</span><span><i class="dot risk-3"></i>橙</span><span><i class="dot risk-4"></i>红</span></div></div>
+        <div id="map" aria-label="运输路线和风险地图"></div>
+        <div class="map-note"><span><i class="mini-line"></i> 路线几何 <b class="badge real" title="OSRM / OpenStreetMap">真实</b></span><span><i class="mini-dash"></i> 模拟事件 <b class="badge simulated" title="场景注入，并非现实封路公告">模拟</b></span><span>地图底图：Natural Earth / OpenStreetMap</span></div>
+        <div class="map-empty" id="mapEmpty"><span>⌁</span><strong>路线从这里开始</strong><small>填写右侧信息并开始分析，查看沿途风险。</small></div>
+        <div class="loading hidden" id="loading"><div class="spinner"></div><strong>正在分析路线与天气</strong><span>正在按预计经过时间匹配预报…</span></div>
+      </div>
+      <section class="chart-card card"><div class="chart-header"><div><div class="section-kicker">WEATHER PROFILE</div><h2>沿线天气截面</h2><p>你几点经过那里，那时天气如何。</p></div><div class="chart-tag">天气数据 <b class="badge real">真实</b> · 风险分级 <b class="badge inferred">推断</b></div></div><div id="chart" aria-label="沿线天气截面图"></div><div class="chart-empty" id="chartEmpty">选择一条路线后，在这里查看沿途天气变化。</div><p class="chart-foot">横轴为路线累计里程；右轴同时显示风速（m/s）与能见度（km），单位以图例和悬停提示为准。坐标刻度 <b class="badge inferred">推断</b></p></section>
+    </section>
+    <aside class="panel card">
+      <div class="panel-head"><div><div class="section-kicker">PLAN YOUR TRIP</div><h2>开始规划</h2><p>输入运输信息，系统将比较可行方案。</p></div><div class="panel-icon">↗</div></div>
+      <div class="business-tabs"><button class="business active" data-business="plan">起讫点规划</button><button class="business" data-business="inspect">已有路线体检</button></div>
+      <div class="form-area">
+        <div id="planFields"><label>发货地 <b class="badge input">用户输入</b><input id="origin" list="originPlaces" value="武汉" placeholder="城市名、带地区的地点或纬度,经度"></label><label>收货地 <b class="badge input">用户输入</b><input id="destination" list="destinationPlaces" value="衡阳" placeholder="城市名、带地区的地点或纬度,经度"></label><datalist id="originPlaces"></datalist><datalist id="destinationPlaces"></datalist></div>
+        <label id="inspectFields" class="hidden">粘贴已有路线 <b class="badge input">用户输入</b><textarea id="routeText" rows="3">武汉 → 咸宁 → 长沙 → 衡阳</textarea><small class="field-hint">支持城市、纬度经度，或 GeoJSON LineString。</small></label>
+        <div class="two-fields"><label>计划发车 <b class="badge input">用户输入</b><input type="datetime-local" id="departure"></label><label>货物类型 <b class="badge input">用户输入</b><select id="cargo"><option>普货</option><option>冷链</option><option>高值</option></select></label></div>
+        <div class="two-fields"><label>承诺时效（小时） <b class="badge input">用户输入</b><input type="number" min="0.1" max="1000" step="0.5" id="promised" value="12"></label><label id="scenarioField" class="hidden">模拟场景 <b class="badge simulated">模拟</b><select id="scenario"><option value="none">不注入</option><option value="closure">封路与减速</option><option value="preference">偏好对比·减速</option></select></label></div>
+        <button class="primary-button" id="analyzeBtn">分析运输路线 <span>↗</span></button><div class="error hidden" id="error" role="alert"></div>
+      </div>
+      <section class="preferences"><div class="subhead"><strong>决策偏好</strong><span>调整后重新计算 <b class="badge inferred">推断</b></span></div><label><span>更赶时间</span><input type="range" id="timePref" min="0" max="1" step="0.1" value="0.5"><b id="timeValue">0.5</b><i class="badge input">用户输入</i></label><label><span>更省费用</span><input type="range" id="moneyPref" min="0" max="1" step="0.1" value="0.5"><b id="moneyValue">0.5</b><i class="badge input">用户输入</i></label></section>
+      <div class="results-head"><div><div class="section-kicker">RECOMMENDED ROUTES</div><h3>路线方案</h3></div><span id="resultCount">等待分析</span></div>
+      <div id="placeResolution" class="place-resolution hidden"></div><div id="results" class="results-empty"><div class="empty-route">⌁</div><strong>还没有路线方案</strong><span>分析完成后，方案会按推荐指数排序。</span></div>
+      <button class="decision-button" id="decisionBtn" disabled>✦ 一键自动决策</button><div id="decision" class="hidden"></div>
+    </aside>
+  </div>
+</main>
+<footer class="data-footer"><strong>数据说明</strong><span><b class="badge real">真实</b> 公开路线 / 天气</span><span><b class="badge simulated">模拟</b> 业务假设 / 场景事件</span><span><b class="badge inferred">推断</b> 到达时间 / 风险 / 决策</span><small>天气：<a href="https://open-meteo.com/">Open-Meteo</a> · 地点：<a href="https://www.geonames.org/">GeoNames</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；风险分级并非官方预警，模拟事件不是现实封路公告。</small></footer>
+<dialog id="assumptionsDialog"><div class="dialog-header"><div><div class="section-kicker">TRANSPARENT ASSUMPTIONS</div><h2>数据与假设</h2><p>所有业务参数均为演示假设，不代表实际报价。</p></div><button id="closeDialog" aria-label="关闭">×</button></div><div id="assumptionsList"></div><div class="dialog-foot">参数可在项目的 config/assumptions.yaml 中调整，修改后重新分析。</div></dialog>
+</body></html>

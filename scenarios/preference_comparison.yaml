@@ -1,0 +1,9 @@
+name: 路线偏好对比·模拟减速
+inject:
+  - edge: E3
+    route_id: A
+    kind: slow
+    value: 0.25
+    start_h: -4
+    end_h: 20
+    confirmed: false

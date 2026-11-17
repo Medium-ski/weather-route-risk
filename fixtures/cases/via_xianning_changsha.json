@@ -1,0 +1,11 @@
+{
+  "type": "via",
+  "route_text": "武汉 → 咸宁 → 长沙 → 衡阳",
+  "departure_utc": "2025-01-01T00:00:00+00:00",
+  "weather_source": "Open-Meteo 历史预报，仅供演示",
+  "expected": {
+    "samples": 31,
+    "highest_risk": 0,
+    "distance_m": 546229
+  }
+}

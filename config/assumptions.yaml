@@ -1,0 +1,45 @@
+sampling_interval_km:
+  value: 20
+  reason: 任务书指定的默认采样间距；采样点还包含路段连接处。
+freight_yuan_per_km:
+  value: 7.0
+  reason: 仅用于原型演示的模拟运价，不代表实际报价。
+time_cost_yuan_per_hour:
+  value: 80.0
+  reason: 仅用于原型演示的模拟运输时间成本。
+late_penalty_yuan:
+  value: 300.0
+  reason: 仅用于原型演示的模拟延误赔付。
+warehouse_yuan_per_hour:
+  value: 40.0
+  reason: 仅用于原型演示的模拟仓储成本。
+promised_hours_default:
+  value: 12
+  reason: 演示默认值，可由调度员修改。
+delay_probability_by_level:
+  value: [0.02, 0.08, 0.20, 0.45, 0.75]
+  reason: 原型用的模拟延误概率，按无命中、蓝、黄、橙、红依次设置；并非统计模型。
+risk_penalty_yuan_by_level:
+  value: [0, 40, 120, 300, 700]
+  reason: 原型用的模拟风险惩罚，按风险等级递增，不代表真实损失。
+cargo_risk_multiplier:
+  value: {普货: 1.0, 冷链: 1.2, 高值: 1.4}
+  reason: 原型用的货类风险权重，冷链与高值货物对风险更敏感。
+unconfirmed_closure_probability:
+  value: 0.35
+  reason: 模拟预报封路时使用的延误概率下限，不代表现实封路概率。
+unconfirmed_closure_penalty_yuan:
+  value: 150
+  reason: 模拟预报封路时增加的风险惩罚，仅用于演示。
+preference_weight_floor:
+  value: 0.5
+  reason: 两个偏好滑块在零位时仍保留一半成本权重，避免把真实成本完全忽略。
+preference_default:
+  value: 0.5
+  reason: 初始时对赶时间与省钱使用相同的中间偏好，调度员可修改。
+storage_hours_default:
+  value: 0
+  reason: 没有用户提供仓储时长时，不假设发生额外仓储时间。
+nearby_city_radius_km:
+  value: 15
+  reason: 演示时把距离路线几何不超过该值的内置城市标为附近城市；不保证实际途经市区。

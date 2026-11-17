@@ -1,0 +1,13 @@
+name: 封路与减速·模拟演示
+inject:
+  - edge: E4
+    kind: closed
+    start_h: 0
+    end_h: 20
+    confirmed: true
+  - edge: E3
+    kind: slow
+    value: 0.55
+    start_h: 0
+    end_h: 16
+    confirmed: false
